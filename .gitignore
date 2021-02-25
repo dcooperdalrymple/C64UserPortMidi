@@ -29,3 +29,7 @@ fp-info-cache
 *.elf
 *.hex
 *.o
+
+# C64 Software files
+*.crt
+*.prg
