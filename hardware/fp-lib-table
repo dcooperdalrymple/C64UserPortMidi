@@ -1,0 +1,4 @@
+(fp_lib_table
+  (lib (name Commodore64C)(type KiCad)(uri ${KIPRJMOD}/250469-01.pretty)(options "")(descr "Commodore 64C footprints"))
+  (lib (name "Video Connectors")(type KiCad)(uri ${KIPRJMOD}/w_conn_av.pretty)(options "")(descr "Video connectors and such"))
+)
