@@ -6,36 +6,40 @@
 #ifndef	_UART_H_
 #define	_UART_H_
 
-//#define	UART_RX_ENABLED		(1) // Enable UART RX
-//#define	UART_TX_ENABLED		(1) // Enable UART TX
-
 #ifndef F_CPU
 # define        F_CPU           (1200000UL) // 1.2 MHz
-#endif  /* !F_CPU */
+#endif
 
-#if defined(UART_TX_ENABLED) && !defined(UART_TX)
-# define        UART_TX         PB3 // Use PB3 as TX pin
-#endif  /* !UART_TX */
+#ifdef UART_TX_ENABLED
+# ifndef UART_TX
+#  define        UART_TX         PB1
+# endif
+#endif
 
-#if defined(UART_RX_ENABLED) && !defined(UART_RX)
-# define        UART_RX         PB4 // Use PB4 as RX pin
-#endif  /* !UART_RX */
+#ifndef UART_RX
+# define        UART_RX         PB0
+#endif
 
-#if (defined(UART_TX_ENABLED) || defined(UART_RX_ENABLED)) && !defined(UART_BAUDRATE)
+#ifndef UART_BAUDRATE
 # define        UART_BAUDRATE   (19200)
-#endif  /* !UART_BAUDRATE */
+#endif
 
-#define	TXDELAY         	(int)(((F_CPU/UART_BAUDRATE)-7 +1.5)/3)
+#ifdef UART_TX_ENABLED
+# define	TXDELAY         	(int)(((F_CPU/UART_BAUDRATE)-7 +1.5)/3)
+#endif
 #define RXDELAY         	(int)(((F_CPU/UART_BAUDRATE)-5 +1.5)/3)
 #define RXDELAY2        	(int)((RXDELAY*1.5)-2.5)
 #define RXROUNDED       	(((F_CPU/UART_BAUDRATE)-5 +2)/3)
 #if RXROUNDED > 127
-# error Low baud rates are not supported - use higher, UART_BAUDRATE
+#error Low baud rates are not supported - use higher, UART_BAUDRATE
 #endif
 
 char uart_getc(void);
+
+#ifdef UART_TX_ENABLED
 void uart_putc(char c);
 void uart_putu(uint16_t x);
 void uart_puts(const char *s);
+#endif
 
 #endif	/* !_UART_H_ */

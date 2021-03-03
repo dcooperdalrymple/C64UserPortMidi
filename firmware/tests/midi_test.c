@@ -9,33 +9,18 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-// Software UART settings
-#define	UART_RX_ENABLED 1
 #define UART_RX PB0
-#ifndef UART_BAUDRATE
-#define UART_BAUDRATE (31250UL)
-#endif
+#define LED PB3
 
 #include "../uart.h"
 
-#define LED PB3
-
 int main(void) {
-    // Set Led as output and start low
+    // Set Led as output and start high
     DDRB |= (1<<LED);
-    PORTB &= ~(1<<LED);
+    PORTB |= (1<<LED);
 
-    char s;
     while (1) {
-        s = uart_getc();
-        switch (s & 0xF0) {
-            case 0x90: // Note On
-                PORTB |= (1<<LED);
-                break;
-            case 0x80: // Note Off
-                PORTB &= ~(1<<LED);
-                break;
-        }
-        // Data is ignored since MSB is always 0
+        uart_getc();
+        PORTB ^= (1<<LED); // Toggle every time message is received
     }
 }

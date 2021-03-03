@@ -6,26 +6,20 @@
  * https://dcooperdalrymple.com/
  */
 
-#define UART_BAUDRATE 115200
 
 #include <avr/io.h>
 #include <util/delay.h>
 
-// Software UART settings
-#define UART_TX_ENABLED 1
-#define UART_TX PB0
-#define	UART_RX_ENABLED 1
-#define UART_RX PB1
-#ifndef UART_BAUDRATE
-#define UART_BAUDRATE (115200UL)
-#endif
+#define UART_TX PB1
+#define UART_RX PB0
 
 #include "../uart.h"
 
 int main(void) {
-    uart_puts("Testing 1, 2, 3...");
+    uart_puts("Hello World!"); // Doesn't work for some reason :/
     char s;
     while (1) {
+        // Only half-duplex, so single characters work fine, but longer strings will get chopped up.
         s = uart_getc();
         uart_putc(s);
     }

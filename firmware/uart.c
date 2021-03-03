@@ -7,7 +7,6 @@
 #include "uart.h"
 
 char uart_getc(void) {
-#ifdef	UART_RX_ENABLED
 	char c;
 	uint8_t sreg;
 
@@ -43,13 +42,11 @@ char uart_getc(void) {
 	);
 	SREG = sreg;
 	return c;
-#else
-	return (-1);
-#endif /* !UART_RX_ENABLED */
 }
 
+#ifdef UART_TX_ENABLED
+
 void uart_putc(char c) {
-#ifdef	UART_TX_ENABLED
 	uint8_t sreg;
 
 	sreg = SREG;
@@ -82,7 +79,6 @@ void uart_putc(char c) {
 		: "r0","r28","r29","r30"
 	);
 	SREG = sreg;
-#endif /* !UART_TX_ENABLED */
 }
 
 void uart_putu(uint16_t x) {
@@ -95,3 +91,5 @@ void uart_putu(uint16_t x) {
 void uart_puts(const char *s) {
 	while (*s) uart_putc(*(s++));
 }
+
+#endif
