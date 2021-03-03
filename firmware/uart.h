@@ -34,7 +34,7 @@
 #error Low baud rates are not supported - use higher, UART_BAUDRATE
 #endif
 
-char uart_getc(void);
+uint8_t uart_getc(void);
 
 #ifdef UART_TX_ENABLED
 void uart_putc(char c);

@@ -6,9 +6,8 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 
-char uart_getc(void) {
-	char c;
-	uint8_t sreg;
+uint8_t uart_getc(void) {
+	uint8_t c, sreg;
 
 	sreg = SREG;
 	cli();

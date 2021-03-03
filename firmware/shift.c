@@ -38,4 +38,6 @@ void shift_write(uint8_t data) {
     #ifdef SHIFT_DELAY
     _delay_us(1);
     #endif
+
+    PORTB &= ~(1<<SHIFT_DATA); // Set data low for led
 }
