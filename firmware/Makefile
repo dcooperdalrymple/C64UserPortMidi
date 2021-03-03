@@ -3,8 +3,6 @@
 MCU=attiny13
 FUSE_L=0x6A
 FUSE_H=0xFF
-F_CPU=9600000
-UART_BAUDRATE=31250
 CC=avr-gcc
 LD=avr-ld
 OBJCOPY=avr-objcopy
@@ -13,10 +11,10 @@ AVRDUDE=avrdude
 ISP_DEVICE=arduino
 ISP_PORT=/dev/ttyACM0
 ISP_BAUDRATE=19200
-CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -DUART_BAUDRATE=${UART_BAUDRATE} -I.
+CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -I.
 TARGET=firmware
 
-SRCS=main.c uart.c
+SRCS=main.c shift.c uart.c
 
 all:
 	${CC} ${CFLAGS} -o ${TARGET}.o ${SRCS}

@@ -6,9 +6,7 @@
 #include <avr/interrupt.h>
 #include "uart.h"
 
-char
-uart_getc(void)
-{
+char uart_getc(void) {
 #ifdef	UART_RX_ENABLED
 	char c;
 	uint8_t sreg;
@@ -50,9 +48,7 @@ uart_getc(void)
 #endif /* !UART_RX_ENABLED */
 }
 
-void
-uart_putc(char c)
-{
+void uart_putc(char c) {
 #ifdef	UART_TX_ENABLED
 	uint8_t sreg;
 
@@ -89,16 +85,13 @@ uart_putc(char c)
 #endif /* !UART_TX_ENABLED */
 }
 
-void uart_putu(uint16_t x)
-{
-        char buff[8] = {0};
-        char *p = buff+6;
-        do { *(p--) = (x % 10) + '0'; x /= 10; } while(x);
-        uart_puts((const char *)(p+1));
+void uart_putu(uint16_t x) {
+	char buff[8] = {0};
+	char *p = buff+6;
+	do { *(p--) = (x % 10) + '0'; x /= 10; } while(x);
+	uart_puts((const char *)(p+1));
 }
 
-void
-uart_puts(const char *s)
-{
-     	while (*s) uart_putc(*(s++));
+void uart_puts(const char *s) {
+	while (*s) uart_putc(*(s++));
 }

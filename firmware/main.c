@@ -2,13 +2,16 @@
  * Title: C64 UserPort MIDI
  * Author: D Cooper Dalrymple
  * Created: 24/02/2021
- * Updated: 24/02/2021
+ * Updated: 02/03/2021
  * https://dcooperdalrymple.com/
  */
 
 #ifndef F_CPU
 #define F_CPU (9600000UL)
 #endif
+
+#include <avr/io.h>
+#include <util/delay.h>
 
 // Software UART settings
 #define	UART_RX_ENABLED (1)
@@ -17,29 +20,20 @@
 #define UART_BAUDRATE (31250)
 #endif
 
-// Setup libraries
-#include <avr/io.h>
-#include <util/delay.h>
-#include <avr/interrupt.h>
 #include "uart.h"
+#include "shift.h"
 
-// Midi
-#define BUFFER 3
+#define BUFFER 3 // Serial buffer (midi package is 3 bytes max)
+#define FLAG PB3
 
-// Data Bus
-#define SER DDB1
-#define SRCLK DDB2
-#define FLAG DDB3
-#define OE DDB4
-
-//static void midi_init();
-//static uint8_t midi_read();
-
-static void bus_init();
-static void bus_write(uint8_t data);
+static void data_write(uint8_t data);
 
 int main(void) {
-    bus_init();
+    shift_init();
+
+    // Set up C64 User Port flag
+    DDRB |= (1<<FLAG);
+    PORTB |= (1<<FLAG); // Keep flag high, active on low
 
     char s, l, *p, buff[BUFFER+1];
     while (1) {
@@ -65,40 +59,20 @@ int main(void) {
         *p = -1;
 
         // Write buffer to buspin
-        bus_write(s);
+        data_write(s);
         p = buff;
         while (*(p) != -1) {
-            bus_write(*(p++));
+            data_write(*(p++));
         }
     }
 }
 
-// 74HC595 Data Bus Shift Register
+void data_write(uint8_t data) {
+    // Write data to register
+    shift_write(data);
 
-void bus_init() {
-    DDRB |= (1<<SER) | (1<<SRCLK) | (1<<FLAG) | (1<<OE); // Set all as output
-    PORTB |= (1<<OE) | (1<<FLAG); // Keep output latch & flag high, active on low
-    PORTB &= ~(1<<SRCLK); // Start clock low
-}
-
-void bus_write(uint8_t data) {
-    PORTB &= ~(1<<OE); // Set latch low
-
-    uint8_t i;
-    for (i = 0; i < 8; i++) {
-        if (!!(data & (1 << (7 - i)))) {
-            PORTB |= 1<<SER;
-        } else {
-            PORTB &= ~(1<<SER);
-        }
-        PORTB |= 1<<SRCLK;
-        PORTB &= ~(1<<SRCLK);
-    }
-
-    PORTB |= 1<<OE; // Set latch high
-
-    // Trigger C64 UserPort flag interrupt
+    // Trigger C64 User Port flag interrupt
     PORTB &= ~(1<<FLAG);
     _delay_us(20); // arbitrary delay
-    PORTB |= 1<<FLAG;
+    PORTB |= (1<<FLAG);
 }
