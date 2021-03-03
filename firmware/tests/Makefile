@@ -3,6 +3,8 @@
 MCU=attiny13
 FUSE_L=0x6A
 FUSE_H=0xFF
+F_CPU=9600000
+UART_BAUDRATE=115200
 CC=avr-gcc
 LD=avr-ld
 OBJCOPY=avr-objcopy
@@ -11,10 +13,11 @@ AVRDUDE=avrdude
 ISP_DEVICE=arduino
 ISP_PORT=/dev/ttyACM0
 ISP_BAUDRATE=19200
-CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -I.
+CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -DUART_BAUDRATE=${UART_BAUDRATE} -I.
 SHIFT_TARGET=shift_test
 MIDI_TARGET=midi_test
-TARGETS=${SHIFT_TARGET} ${MIDI_TARGET}
+UART_TARGET=uart_test
+TARGETS=${SHIFT_TARGET} ${MIDI_TARGET} ${UART_TARGET}
 DEPS=../shift.c ../uart.c
 
 all: $(TARGETS)
@@ -30,6 +33,9 @@ flash_shift:
 
 flash_midi:
 	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${MIDI_TARGET}.hex:i
+
+flash_uart:
+	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${UART_TARGET}.hex:i
 
 fuse:
 	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m

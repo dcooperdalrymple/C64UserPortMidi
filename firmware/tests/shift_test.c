@@ -6,10 +6,6 @@
  * https://dcooperdalrymple.com/
  */
 
-#ifndef F_CPU
-#define F_CPU (9600000UL)
-#endif
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include "../shift.h"
