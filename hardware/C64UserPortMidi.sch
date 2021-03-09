@@ -214,17 +214,6 @@ F 3 "" H 6300 3400 50  0001 C CNN
 	1    6300 3400
 	1    0    0    -1  
 $EndComp
-$Comp
-L Connector:DIN-5 J2
-U 1 1 603A90E2
-P 1900 2250
-F 0 "J2" H 1900 1975 50  0000 C CNN
-F 1 "MIDI IN DIN-5" H 1900 1884 50  0000 C CNN
-F 2 "Video Connectors:din-5" H 1900 2250 50  0001 C CNN
-F 3 "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf" H 1900 2250 50  0001 C CNN
-	1    1900 2250
-	1    0    0    -1  
-$EndComp
 Text Notes 1450 1500 0    100  ~ 20
 MIDI Input
 Text Notes 5450 1550 0    100  ~ 20
@@ -618,6 +607,17 @@ Wire Wire Line
 Wire Wire Line
 	3550 5750 3750 5750
 Connection ~ 3550 5750
+$Comp
+L hackup-commodore:DIN-5 J2
+U 1 1 60497A6A
+P 1900 2250
+F 0 "J2" H 1900 1975 50  0000 C CNN
+F 1 "MIDI IN DIN-5" H 1900 1884 50  0000 C CNN
+F 2 "Video Connectors:din-5" H 1900 2250 50  0001 C CNN
+F 3 "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf" H 1900 2250 50  0001 C CNN
+	1    1900 2250
+	1    0    0    -1  
+$EndComp
 Wire Bus Line
 	8000 2400 8000 3500
 Wire Bus Line
