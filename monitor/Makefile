@@ -7,11 +7,11 @@ TARGET=monitor
 NAME=C64 UserPort Midi Monitor
 
 all:
-	${DASM} ${SRC} -o${TARGET}.prg -f3 -v5
-	${CARTCONV} -i "${TARGET}.prg" -o "${TARGET}.crt" -t normal -n "${NAME}"
+	${DASM} ${SRC} -o${TARGET}.bin -f3 -v5
+	${CARTCONV} -t normal -n "${NAME}" -i "${TARGET}.bin" -o "${TARGET}.crt"
 
 test:
 	x64 ${TARGET}.crt
 
 clean:
-	rm -f *.prg *.crt
+	rm -f *.bin *.crt

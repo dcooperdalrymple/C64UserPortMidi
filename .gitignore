@@ -33,3 +33,4 @@ fp-info-cache
 # C64 Software files
 *.crt
 *.prg
+*.bin
