@@ -7,7 +7,7 @@ TARGET=monitor
 NAME=C64 UserPort Midi Monitor
 
 all:
-	${DASM} ${SRC} -o${TARGET}.bin -f3 -v5
+	${DASM} ${SRC} -o${TARGET}.bin -f3 -v5 -l${TARGET}.lst -s${TARGET}.sym
 	${CARTCONV} -t normal -n "${NAME}" -i "${TARGET}.bin" -o "${TARGET}.crt"
 
 test:

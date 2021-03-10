@@ -34,3 +34,5 @@ fp-info-cache
 *.crt
 *.prg
 *.bin
+*.lst
+*.sym
