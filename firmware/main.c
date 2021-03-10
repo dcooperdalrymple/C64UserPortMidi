@@ -23,7 +23,7 @@ int main(void) {
 
     // Set up C64 User Port flag
     DDRB |= (1<<FLAG);
-    PORTB |= (1<<FLAG); // Keep flag high, active on low
+    PORTB &= ~(1<<FLAG); // Keep flag low, active on high
 
     uint8_t s;
     while (1) {
@@ -37,7 +37,7 @@ void data_write(uint8_t data) {
     shift_write(data);
 
     // Trigger C64 User Port flag interrupt
-    PORTB &= ~(1<<FLAG);
-    _delay_us(20); // arbitrary delay
     PORTB |= (1<<FLAG);
+    _delay_us(20); // arbitrary delay
+    PORTB &= ~(1<<FLAG);
 }
