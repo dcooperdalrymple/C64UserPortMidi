@@ -32,7 +32,11 @@ FLAG_TARGET=flag_test
 FLAG_DEFS=-DF_CPU=${F_CPU}
 FLAG_DEPS=../shift.c
 
-all: make_shift make_midi make_flag#make_uart
+INTERRUPT_TARGET=interrupt_test
+INTERRUPT_DEFS=-DF_CPU=${F_CPU}
+INTERRUPT_DEPS=
+
+all: make_shift make_midi make_flag make_interrupt#make_uart
 
 make_shift:
 	${CC} ${CFLAGS} ${SHIFT_DEFS} -o ${SHIFT_TARGET}.o ${SHIFT_TARGET}.c ${SHIFT_DEPS}
@@ -58,6 +62,12 @@ make_flag:
 	${OBJCOPY} -j .text -j .data -O ihex ${FLAG_TARGET}.o ${FLAG_TARGET}.hex
 	${SIZE} -C --mcu=${MCU} ${FLAG_TARGET}.elf
 
+make_interrupt:
+	${CC} ${CFLAGS} ${INTERRUPT_DEFS} -o ${INTERRUPT_TARGET}.o ${INTERRUPT_TARGET}.c ${INTERRUPT_DEPS}
+	${LD} -o ${INTERRUPT_TARGET}.elf ${INTERRUPT_TARGET}.o
+	${OBJCOPY} -j .text -j .data -O ihex ${INTERRUPT_TARGET}.o ${INTERRUPT_TARGET}.hex
+	${SIZE} -C --mcu=${MCU} ${INTERRUPT_TARGET}.elf
+
 flash_shift:
 	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${SHIFT_TARGET}.hex:i
 
@@ -69,6 +79,9 @@ flash_midi:
 
 flash_flag:
 	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${FLAG_TARGET}.hex:i
+
+flash_interrupt:
+	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${INTERRUPT_TARGET}.hex:i
 
 fuse:
 	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
