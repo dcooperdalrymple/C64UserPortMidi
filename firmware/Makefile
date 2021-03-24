@@ -1,9 +1,9 @@
 # Compile ATtiny13 Firmware for C64 UserPort MIDI
 
 MCU=attiny13
-FUSE_L=0x6A
+FUSE_L=0x7A#0x6A for 9.6Mhz/8=1.2Mhz, 0x79 for 4.8Mhz (no clock div), 0x7A for 9.6Mhz (no clock div)
 FUSE_H=0xFF
-F_CPU=1200000 # 9.6Mhz/8
+F_CPU=9600000
 UART_BAUDRATE=31250
 CC=avr-gcc
 LD=avr-ld
