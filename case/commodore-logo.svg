@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="108.315"
+   height="105.219"
+   id="svg7148"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   sodipodi:docname="commodore-logo.svg">
+  <metadata
+     id="metadata25">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1043"
+     id="namedview23"
+     showgrid="false"
+     inkscape:zoom="1.1900857"
+     inkscape:cx="309.96316"
+     inkscape:cy="-20.699664"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg7148"
+     inkscape:document-rotation="0" />
+  <defs
+     id="defs7150" />
+  <g
+     id="g844"
+     transform="translate(-5.75,-4.59375)">
+    <path
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#002255;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:3;marker:none;enable-background:accumulate"
+       d="m 58.375,4.59375 c -29.05432,0 -52.625,23.57068 -52.625,52.625 0,29.05432 23.57068,52.59375 52.625,52.59375 5.587369,0 10.979977,-0.88711 16.03125,-2.5 v -26.25 c -4.362097,2.536231 -9.466925,4 -14.9375,4 -15.987739,0 -28.9375,-12.465105 -28.9375,-27.84375 0,-15.378645 12.949761,-27.84375 28.9375,-27.84375 5.470575,0 10.575403,1.463769 14.9375,4 V 7.09375 c -5.051273,-1.614759 -10.443881,-2.5 -16.03125,-2.5 z"
+       id="path3002" />
+    <path
+       id="polygon9367"
+       style="fill:#002255"
+       transform="matrix(0.330752,0,0,0.321694,15.34867,12.07971)"
+       d="m 179.959,134.853 v -56.75 h 118.5 l -53,56.75 z" />
+    <path
+       id="polygon9369"
+       style="fill:#ff0000"
+       transform="matrix(0.330752,0,0,0.321694,15.34867,12.07971)"
+       d="m 179.959,146.353 v 56.75 h 118.5 l -53,-56.75 z" />
+  </g>
+</svg>
