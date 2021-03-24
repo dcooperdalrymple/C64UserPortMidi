@@ -35,8 +35,8 @@ uint8_t uart_getc(void) {
 		: "=r" (c)
 		: [uart_port] "I" (_SFR_IO_ADDR(PORTB)),
 		[uart_pin] "I" (UART_RX),
-		[rxdelay] "I" (RXDELAY),
-		[rxdelay2] "I" (RXDELAY2)
+		[rxdelay] "i" (RXDELAY),
+		[rxdelay2] "i" (RXDELAY2)
 		: "r0","r18","r19"
 	);
 	SREG = sreg;

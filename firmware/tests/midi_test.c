@@ -10,7 +10,7 @@
 #include <util/delay.h>
 
 #define UART_RX PB0
-#define LED PB3
+#define LED PB1
 
 #include "../uart.h"
 
