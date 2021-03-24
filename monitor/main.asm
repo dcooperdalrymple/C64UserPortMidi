@@ -2,10 +2,12 @@
 ; Created by D Cooper Dalrymple 2021 - dcdalrymple.com
 ; Licensed under GNU LGPL V3.0
 ; Created: 25-02-2021
-; Last revision: 10-03-2021
+; Last revision: 24-03-2021
 
     processor 6502
     ;include "c64.h"
+
+DEBUG   = 0
 
 ;===============
 ; C64 Constants
@@ -153,8 +155,11 @@ flag_init:
     sta NMIVEC+1
 
     ; Disable all other interrupts
-    lda #%00001111 ; Bit #7 is fill bit
+    lda #%01111111 ; Bit #7 is fill bit
+    sta CIA1ICR
     sta CIA2ICR
+    lda #0
+    sta $D01A ; Raster Interrupts
 
     ; Enable Flag Interrupt
     lda #%10010000
@@ -190,7 +195,43 @@ key_init:
 
     lda #0
     sta buflen
-    sta linelen
+
+#if DEBUG == 1
+    ; Test buffer data
+    lda #%10000000
+    sta mode
+    lda #14
+    sta buflen
+    lda #$9B
+    sta buffer+0
+    lda #$47
+    sta buffer+1
+    lda #$9B
+    sta buffer+2
+    lda #$00
+    sta buffer+3
+    lda #$7B
+    sta buffer+4
+    lda #$9B
+    sta buffer+5
+    lda #$48
+    sta buffer+6
+    lda #$9B
+    sta buffer+7
+    lda #$00
+    sta buffer+8
+    lda #$7B
+    sta buffer+9
+
+    lda #$BB
+    sta buffer+10
+    lda #$7F
+    sta buffer+11
+    lda #$BB
+    sta buffer+12
+    lda #$00
+    sta buffer+13
+#endif
 
 ;=====================
 ; Program Info Header
@@ -209,6 +250,10 @@ screen_init:
     lda #0
     sta CURCOL
     sta CURROW
+
+    ; Reset line length
+    lda #0
+    sta linelen
 
 screen_clear:
     lda #SPACE
@@ -388,7 +433,7 @@ buffer_midi_skip:
     cpy buflen
     bne buffer_midi_loop
 
-    jmp buffer_reset
+    ;jmp buffer_reset
 
 buffer_reset:
     lda #0
@@ -402,6 +447,11 @@ buffer_reset:
 
 flag_handler:
 
+    ; Save registers (only a & y)
+    pha
+    tya
+    pha
+
     ; Read User Port GPIO byte
     lda CIA2B
 
@@ -412,14 +462,23 @@ flag_handler:
     ; Increment buffer length
     inc buflen
 
+    ; Restore registers
+    pla
+    tay
+    pla
+
     bit CIA2ICR ; Tell interrupt to reset
     rti ; Return to main process
+
+;====================
+; String & Midi Data
+;====================
 
 info_str:
     .byte $0E,#CLS ; Change case & cls
     dc.b "c64 uSERpORT mIDI mONITOR",#EOL
     dc.b "d cOOPER dALRYMPLE",#EOL
-    dc.b "v0.1 - 2021.03.10",#EOL,#EOL
+    dc.b "v0.2 - 2021.03.24",#EOL,#EOL
     .byte #EOF
 
 mode_hex_str:
@@ -438,8 +497,6 @@ hex_prepend:
     dc.b "$"
 hex_data:
     dc.b "0123456789abcdef"
-hex_append:
-    dc.b " "
 
 midi_comm_len:
     .byte #COMM_NOTE_OFF_LEN

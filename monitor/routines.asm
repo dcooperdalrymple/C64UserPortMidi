@@ -18,9 +18,7 @@ Print_chr:
     lda (temp),y
     cmp #EOF
     beq Print_done
-    pha
     jsr CHROUT
-    pla
 
     iny
     jmp Print_chr
@@ -53,11 +51,26 @@ PrintHex:
     lda hex_data,y
     sta hexstr+2
 
-    ; Prepare string
+    ; Hex indicator icon "$"
     lda hex_prepend
     sta hexstr+0
-    lda hex_append
+
+    ; Check if new line or space
+    lda #SPACE
+    inc linelen
+    ldx linelen
+    cpx #HEX_LINE_MAX
+    bne PrintHex_append
+
+    ; Reset line length
+    lda #0
+    sta linelen
+
+    lda #EOL
+PrintHex_append:
     sta hexstr+3
+
+    ; String end indicator
     lda #EOF
     sta hexstr+4
 
@@ -65,15 +78,6 @@ PrintHex:
     ldy #>hexstr
     jsr Print
 
-    ; Check line length to avoid weird looping
-    inc linelen
-    lda linelen
-    cmp #HEX_LINE_MAX
-    bne PrintHex_skip
-
-    jsr PrintLine
-
-PrintHex_skip:
     rts
 
 ;================================================
@@ -126,36 +130,42 @@ PrintDec_loop:
     lsr
     REPEND
     adc #$30
-    pha
     jsr CHROUT
-    pla
 
     ; Bottom nibble
     ldy temp+3
     lda temp,y
     and #$0f
     adc #$30
-    pha
     jsr CHROUT
-    pla
 
     dec temp+3
     ldy temp+3
     bne PrintDec_loop
 
-    ; Space at the end
-    jsr PrintSpace
-
-    ; Check line length
+    ; Space or line at the end
+    lda #SPACE
     inc linelen
-    lda linelen
-    cmp #DEC_LINE_MAX
-    bne PrintDec_skip
+    ldx linelen
+    cpx #DEC_LINE_MAX
+    bne PrintDec_append
 
-    jsr PrintLine
+    ; Reset linelen
+    lda #0
+    sta linelen
 
-PrintDec_skip:
+    lda #EOL
+PrintDec_append:
+    jsr CHROUT
+
     rts
+
+;=================================================
+; PrintNibble
+; -----
+; A - Byte value to be printed as decimal string,
+;     but just the first 4 bits
+;=================================================
 
 PrintNibble:
     REPEAT 4
@@ -194,42 +204,48 @@ PrintNibble_bit:
     lsr
     REPEND
     adc #$30
-    pha
     jsr CHROUT
-    pla
 
     ; Bottom nibble
     lda temp+1
     and #$0f
     adc #$30
-    pha
     jsr CHROUT
-    pla
 
     ; Space at the end
     jsr PrintSpace
 
     rts
 
+;===========
+; PrintLine
+;===========
 
 PrintLine:
     lda #EOL
-    pha
     jsr CHROUT
-    pla
 
     lda #0
     sta linelen
 
     rts
 
+;============
+; PrintSpace
+;============
+
 PrintSpace:
     lda #SPACE
-    pha
     jsr CHROUT
-    pla
 
     rts
+
+;=================================
+; PrintMidi
+; ---------
+; Prints out full midi message
+; based on variables (mcomm, etc)
+;=================================
 
 PrintMidi:
 
