@@ -29,6 +29,8 @@ fp-info-cache
 *.elf
 *.hex
 *.o
+*.cof
+*.obj
 
 # C64 Software files
 *.crt
@@ -36,3 +38,6 @@ fp-info-cache
 *.bin
 *.lst
 *.sym
+
+# Spreadsheets
+*.ods#
