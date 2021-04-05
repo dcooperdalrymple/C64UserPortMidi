@@ -25,38 +25,35 @@ midi_buffer: .byte 64
 
 .org $000A ; Start of program code
 
-.include "flag.asm"
-.include "shift.asm"
-.include "midi.asm"
+.include "delay.inc"
+.include "shift.inc"
+.include "midi.inc"
 
 init:
-
-    rcall FlagInit
     rcall ShiftInit
     rcall MidiInit
 
 buffer:
-buffer_wait:
-    cpi YL, LOW(SRAM_START)
-    breq buffer_wait
+    nop
 
-    ldi i, LOW(SRAM_START)
+    ldi tmp, LOW(SRAM_START)
+    cpse YL, tmp ; NOTE: Relative branches aren't working for some reason
+    rjmp buffer_process
+    rjmp buffer
+
+buffer_process:
+    ldi XH, HIGH(SRAM_START)
+    ldi XL, LOW(SRAM_START)
 buffer_write:
 
-    ; Ensure that flag is high
-    rcall FlagClear
-
     ; Load current data byte and shift into register
-    ld data, Y
+    ld data, X
     rcall ShiftByte
 
-    ; Set flag low to signal to C64 that data is ready
-    rcall FlagTrigger
-
     ; Load up next byte if we still haven't hit index
-    inc i
-    cp i, YL
-    brne buffer_write
+    inc XL
+    cpse XL, YL
+    rjmp buffer_write
 
 buffer_clear:
     rcall MidiClear

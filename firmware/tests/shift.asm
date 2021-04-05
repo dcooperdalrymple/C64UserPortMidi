@@ -18,8 +18,8 @@
 
 .org $000A
 
-.include "delay.asm"
-.include "shift.asm"
+.include "delay.inc"
+.include "shift.inc"
 
 init:
     rcall ShiftInit
@@ -27,12 +27,16 @@ init:
 loop:
     ldi data, $AA
     rcall ShiftByte
-    ldi tmp, 1
-    rcall DelaySeconds
+
+    ldi MH, HIGH(1000)
+    ldi ML, LOW(1000)
+    rcall DelayMilliseconds
 
     ldi data, $55
     rcall ShiftByte
-    ldi tmp, 1
-    rcall DelaySeconds
+
+    ldi MH, HIGH(1000)
+    ldi ML, LOW(1000)
+    rcall DelayMilliseconds
 
     rjmp loop

@@ -2,7 +2,7 @@
 ; Created by D Cooper Dalrymple 2021 - dcdalrymple.com
 ; Licensed under GNU LGPL V3.0
 ; Created: 25-02-2021
-; Last revision: 24-03-2021
+; Last revision: 04-04-2021
 
     processor 6502
     include "c64.h"
@@ -105,6 +105,10 @@ flag_init:
 port_init:
     lda #0
     sta CIA2DDRB ; Set all as inputs on port b
+
+    lda #%00000100
+    sta CIA2DDRA ; Set PA2 as output
+    sta CIA2A ; Start high to indicate that we're not in the middle of an interrupt
 
 ;=================
 ; Keyboard Config
@@ -383,6 +387,10 @@ flag_handler:
     tya
     pha
 
+    ; Set PA2 low to indicate that we're processing byte
+    lda #%00000000
+    sta CIA2A
+
     ; Read User Port GPIO byte
     lda CIA2B
 
@@ -392,6 +400,10 @@ flag_handler:
 
     ; Increment buffer length
     inc buflen
+
+    ; Set PA2 high to indicate that we're done with the interrupt
+    lda #%00000100
+    sta CIA2A
 
     ; Restore registers
     pla
@@ -409,7 +421,7 @@ info_str:
     .byte $0E,#CLS ; Change case & cls
     dc.b "c64 uSERpORT mIDI mONITOR",#EOL
     dc.b "d cOOPER dALRYMPLE",#EOL
-    dc.b "v0.2 - 2021.03.24",#EOL,#EOL
+    dc.b "v0.3 - 2021.04.04",#EOL,#EOL
     .byte #EOF
 
 mode_hex_str:

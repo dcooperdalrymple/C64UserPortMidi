@@ -34,17 +34,27 @@ init:
     sbi PORTB, (1<<BTN)
 
     cli
-    sbi MCUCR, (1<<ISC01)
-    cbi MCUCR, (1<<ISC00)
-    cbi GIMSK, (1<<PCIE)
-    sbi GIMSK, (1<<INT0)
+
+    ; Configure external interrupt as falling edge
+    in tmp, MCUCR
+    cbr tmp, (1<<ISC00)
+    sbr tmp, (1<<ISC01)
+    out MCUCR, tmp
+
+    ; Enable external interrupt
+    in tmp, GIMSK
+    sbr tmp, (1<<INT0)
+    cbr tmp, (1<<PCIE)
+    out GIMSK, tmp
+
     sei
 
 loop:
     rjmp loop
 
 ToggleLED:
+    ldi k, (1<<LED)
     in tmp, PORTB
-    eor tmp, (1<<LED)
+    eor tmp, k
     out PORTB, tmp
     reti

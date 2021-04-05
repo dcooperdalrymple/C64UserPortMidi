@@ -412,8 +412,6 @@ F 3 "" H 4950 3400 50  0001 C CNN
 	1    4950 3400
 	1    0    0    -1  
 $EndComp
-Text GLabel 8500 2200 0    50   Input ~ 0
-FLAG
 Entry Wire Line
 	7000 2300 7100 2400
 Wire Wire Line
@@ -449,8 +447,6 @@ Text GLabel 5750 5950 2    50   Output ~ 0
 RX
 Text GLabel 5750 5850 2    50   Input ~ 0
 DATA
-Text GLabel 5750 6050 2    50   Input ~ 0
-FLAG
 $Comp
 L power:VCC #PWR0116
 U 1 1 60442033
@@ -523,8 +519,6 @@ F 3 "" H 5700 2600 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5700 2600 5900 2600
-Text GLabel 3100 5950 2    50   Output ~ 0
-FLAG
 Text GLabel 3100 6050 2    50   Output ~ 0
 LATCH
 Text GLabel 3100 5850 2    50   Output ~ 0
@@ -618,6 +612,14 @@ F 3 "http://www.mouser.com/ds/2/18/40_c091_abd_e-75918.pdf" H 1900 2250 50  0001
 	1    1900 2250
 	1    0    0    -1  
 $EndComp
+Text GLabel 9500 2800 2    50   Output ~ 0
+RECV
+Text GLabel 3100 5950 2    50   Input ~ 0
+RECV
+Text GLabel 8500 2200 0    50   Input ~ 0
+LATCH
+Text GLabel 5750 6050 2    50   Input ~ 0
+RECV
 Wire Bus Line
 	8000 2400 8000 3500
 Wire Bus Line

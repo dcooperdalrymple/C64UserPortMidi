@@ -15,7 +15,7 @@ I am aware that there are serial lines available on the user port that have been
 ## Components
 I mostly used the components I had sitting around to design this which is why I picked the very limited ATtiny13A microcontroller to handle UART communication (without a UART hardware controller). That being said, the simple discrete components required make this an inexpensive option compared to other options out there. The [BOM I've compiled](https://www.digikey.com/BOM/Create/CreateSharedBom?bomId=8564682) makes this roughly $10 for all the parts (not including the PCB).
 
-For future revisions, I might upgrade the tiny13 to an ATtiny2313 which has hardware UART support and enough IO pins to supply all 8 bits to the user port data bus. This (along with the jump to SMD components) would significantly decrease the size and maybe even the cost. _[Thanks mitxela for the advice!](https://mitxela.com/)_
+For future revisions, I might upgrade the tiny13 to an ATtiny2313 which has hardware UART support and enough IO pins to supply all 8 bits to the user port data bus. This (along with the jump to SMD components) would significantly decrease the size and maybe even the cost. _Thanks [mitxela](https://mitxela.com/) for the advice!_
 
 ![Schematic of C64UserPortMidi](assets/schematic.png)
 

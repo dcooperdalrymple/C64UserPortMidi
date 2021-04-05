@@ -15,10 +15,14 @@ AS=avra
 AVRDUDE=avrdude
 ASFLAGS=-I ./include
 
-SRCS=main.asm
+SRC=main
 
 all:
-	${AS} ${ASFLAGS} -o ${TARGET} ${SRCS}
+	${AS} ${ASFLAGS} -o ${TARGET}.hex -l ${TARGET}.lst -m ${TARGET}.map ${SRC}.asm
+	mv ${SRC}.hex ${TARGET}.hex
+	mv ${SRC}.eep.hex ${TARGET}.eep.hex
+	mv ${SRC}.cof ${TARGET}.cof
+	mv ${SRC}.obj ${TARGET}.obj
 
 flash:
 	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${TARGET}.hex:i
@@ -27,4 +31,4 @@ fuse:
 	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
 
 clean:
-	rm -f *.asm~ *.hex *.obj *.cof
+	rm -f *.asm~ *.hex *.obj *.cof *.elf *.o *.map *.lst

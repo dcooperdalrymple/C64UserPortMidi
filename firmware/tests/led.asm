@@ -1,4 +1,4 @@
-; Title: C64 UserPort MIDI - Midi Input Test
+; Title: C64 UserPort MIDI - Led Blink Test
 ; Author: D Cooper Dalrymple
 ; Created: 02/03/2021
 ; Updated: 25/03/2021
@@ -20,23 +20,21 @@
 
 .org $000A
 
-.include "midi.inc"
+.include "delay.inc"
 
 init:
     ; Set Led as output and start high
     sbi DDRB, LED
     sbi PORTB, LED
 
-    rcall MidiInit
-
 loop:
-    cpi YL, LOW(SRAM_START)
-    breq loop
-
-    ldi k, (1<<LED)
+    ldi i, (1<<LED)
     in tmp, PORTB
-    eor tmp, k
+    eor tmp, i
     out PORTB, tmp
 
-    rcall MidiClear
+    ldi MH, HIGH(1000)
+    ldi ML, LOW(1000)
+    rcall DelayMilliseconds
+
     rjmp loop
