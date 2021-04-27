@@ -1,6 +1,5 @@
 .equ MIDI_RX = PB1
-.equ MIDI_DELAY_START = 101
-.equ MIDI_DELAY_BIT = 100
+.equ MIDI_DELAY_BIT = 101 ; 307 cycles (3 counter + 3*101 delay + 2 read)
 
 .def delay = r21
 .def counter = r22
@@ -31,19 +30,22 @@ MidiInit:
     sei
     ret
 
-MidiReceive:
-    cli
+MidiReceive:                        ; 3 for init
+    cli                             ; 1
+    ldi counter, 0x80               ; 1
+    ldi delay, (MIDI_DELAY_BIT)     ; 1
 
-    ldi delay, (MIDI_DELAY_START)
-    ldi counter, 0x80
-MidiReceive_bit:
-    subi delay, 1
-    brne MidiReceive_bit
-    ldi delay, (MIDI_DELAY_BIT)
-    sbic PORTB, MIDI_RX ; Skip next instruction if pin is low
-    sec
-    ror counter
-    brcc MidiReceive_bit
+MidiReceive_bit:                    ; 3 for every iteration
+    dec delay                       ; 1
+    brne MidiReceive_bit            ; 2 (1 if false)
+    ldi delay, (MIDI_DELAY_BIT)     ; 1
+
+MidiReceive_read:                   ; 2 for read
+    sbic PORTB, MIDI_RX             ; Skip next instruction if pin is low
+    sec                             ; 2 (skip + sec)
+
+    ror counter                     ; 1
+    brcc MidiReceive_bit            ; 2 (1 if false)
 MidiReceive_stop: ; Wait until high for stop bit
     sbis PORTB, MIDI_RX ; Skip next instruction if pin is high
     rjmp MidiReceive_stop
@@ -59,4 +61,12 @@ MidiClear:
     ; Reset buffer index to beginning of SRAM
     ldi YH, HIGH(SRAM_START)
     ldi YL, LOW(SRAM_START)
+    ret
+
+MidiRead:
+    ; Wait until a byte is in the buffer, uses XH/XL as relative address
+    inc XL
+MidiRead_wait:
+    cp XL, YL
+    brsh MidiRead_wait
     ret
