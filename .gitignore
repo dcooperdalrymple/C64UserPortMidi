@@ -13,6 +13,9 @@ _autosave-*
 *-save.pro
 *-save.kicad_pcb
 fp-info-cache
+hardware/C64UserPortMidi-backups
+hardware/C64UserPortMidi-rescue.dcm
+hardware/C64UserPortMidi-rescue.lib
 
 # Netlist files (exported from Eeschema)
 *.net

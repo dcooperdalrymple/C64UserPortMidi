@@ -1,3 +1,4 @@
 (sym_lib_table
-  (lib (name hackup-commodore)(type Legacy)(uri ${KIPRJMOD}/hackup-commodore.lib)(options "")(descr "Commodore Ports"))
+  (lib (name "hackup-commodore")(type "Legacy")(uri "${KIPRJMOD}/hackup-commodore.lib")(options "")(descr "Commodore Ports"))
+  (lib (name "C64UserPortMidi-rescue")(type "Legacy")(uri "${KIPRJMOD}/C64UserPortMidi-rescue.lib")(options "")(descr ""))
 )
