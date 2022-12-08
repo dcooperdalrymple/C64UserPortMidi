@@ -18,6 +18,9 @@
 .org $0000 ; Hard Reset
     rjmp init
 
+.org INT0addr
+    rjmp MidiReceive
+
 .org $000A
 
 .include "midi.inc"
@@ -28,6 +31,33 @@ init:
     cbi PORTB, LED
 
     rcall MidiInit
+
+loop:
+    cpi YL, LOW(SRAM_START)
+    breq wait
+
+    ldi XH, HIGH(SRAM_START)
+    ldi XL, LOW(SRAM_START)
+
+loop_read:
+    ;ld tmp, X
+
+    ;sbrs tmp, 7
+    ;rjmp loop_next
+
+    ; Toggle LED
+    ldi k, (1<<LED)
+    in tmp, PORTB
+    eor tmp, k
+    out PORTB, tmp
+
+loop_next:
+    inc XL
+    cpse XL, YL
+    rjmp loop_read
+
+    rcall MidiClear
+    rjmp loop
 
 wait:
     cpi YL, LOW(SRAM_START)
