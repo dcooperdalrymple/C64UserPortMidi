@@ -17,6 +17,7 @@ fp-info-cache
 hardware/C64UserPortMidi-backups
 hardware/C64UserPortMidi-rescue.dcm
 hardware/C64UserPortMidi-rescue.lib
+hardware/#auto_saved_files#
 
 # Netlist files (exported from Eeschema)
 *.net

@@ -1,17 +1,18 @@
-# Compile communication tests for ATtiny13A
+# Compile communication tests for ATtiny2313
 
-MCU=attiny13
-FUSE_L=0x7A#0x6A for 9.6Mhz/8=1.2Mhz, 0x79 for 4.8Mhz (no clock div), 0x7A for 9.6Mhz (no clock div)
-FUSE_H=0xFF
-F_CPU=9600000
+MCU=attiny2313
+# Internal 8MHz CLK / 8 = 1MHz, Preserve EEPROM, BOD Detect at 4.3V, SPI Programming Enabled
+# Fuse Calculator: http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny2313
+FUSE_L=0x44
+FUSE_H=0x99
+F_CPU=1000000 # 1 MHz
 MIDI_BAUDRATE=31250
 
 LED_TARGET=led
-SHIFT_TARGET=shift
 MIDI_TARGET=midi
 TRANSFER_TARGET=transfer
 INTERRUPT_TARGET=interrupt
-TARGETS=${LED_TARGET}.hex ${SHIFT_TARGET}.hex ${MIDI_TARGET}.hex ${TRANSFER_TARGET}.hex ${INTERRUPT_TARGET}.hex
+TARGETS=${LED_TARGET}.hex ${MIDI_TARGET}.hex ${TRANSFER_TARGET}.hex ${INTERRUPT_TARGET}.hex
 
 ISP_DEVICE=arduino
 ISP_PORT=/dev/ttyACM0

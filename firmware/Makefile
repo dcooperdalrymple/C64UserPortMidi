@@ -1,9 +1,11 @@
-# Compile ATtiny13 Firmware for C64 UserPort MIDI
+# Compile ATtiny2313 Firmware for C64 UserPort MIDI
 
-MCU=attiny13
-FUSE_L=0x7A#0x6A for 9.6Mhz/8=1.2Mhz, 0x79 for 4.8Mhz (no clock div), 0x7A for 9.6Mhz (no clock div)
-FUSE_H=0xFF
-F_CPU=9600000
+MCU=attiny2313
+# Internal 8MHz CLK / 8 = 1MHz, Preserve EEPROM, BOD Detect at 4.3V, SPI Programming Enabled
+# Fuse Calculator: http://eleccelerator.com/fusecalc/fusecalc.php?chip=attiny2313
+FUSE_L=0x44
+FUSE_H=0x99
+F_CPU=1000000 # 1 MHz
 UART_BAUDRATE=31250
 TARGET=firmware
 
@@ -17,7 +19,9 @@ ASFLAGS=-I ./include
 
 SRC=main
 
-all:
+all: compile
+
+compile:
 	${AS} ${ASFLAGS} -o ${TARGET}.hex -l ${TARGET}.lst -m ${TARGET}.map ${SRC}.asm
 	mv ${SRC}.hex ${TARGET}.hex
 	mv ${SRC}.eep.hex ${TARGET}.eep.hex

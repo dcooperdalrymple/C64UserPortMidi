@@ -1,15 +1,21 @@
 ; Title: C64 UserPort MIDI - Simple Interrupt Test
 ; Author: D Cooper Dalrymple
+; Website: https://dcdalrymple.com/C64UserPortMidi/
 ; Created: 24/03/2021
-; Updated: 25/03/2021
-; https://dcooperdalrymple.com/
+; Updated: 13/12/2022
+; HW Version: v1.0 RevA
 
 .nolist
-.include "tn13Adef.inc"
+.include "tn2313def.inc"
 .list
 
-.equ BTN = PB1
-.equ LED = PB0
+.equ BTN = PD2
+.equ BTN_DDR = DDRD
+.equ BTN_PORT = PORTD
+
+.equ LED = PD3
+.equ LED_DDR = DDRD
+.equ LED_PORT = PORTD
 
 .def tmp = r16
 .def i = r17
@@ -26,12 +32,12 @@
 
 init:
     ; Set Led as output and start high
-    sbi DDRB, (1<<LED)
-    sbi PORTB, (1<<LED)
+    sbi LED_DDR, LED
+    sbi LED_PORT, LED
 
     ; Set button as input and pullup high
-    cbi DDRB, (1<<BTN)
-    sbi PORTB, (1<<BTN)
+    cbi BTN_DDR, BTN
+    sbi BTN_PORT, BTN
 
     cli
 
@@ -44,7 +50,7 @@ init:
     ; Enable external interrupt
     in tmp, GIMSK
     sbr tmp, (1<<INT0)
-    cbr tmp, (1<<PCIE)
+    cbr tmp, (1<<INT1)|(1<<PCIE)
     out GIMSK, tmp
 
     sei
@@ -54,7 +60,7 @@ loop:
 
 ToggleLED:
     ldi k, (1<<LED)
-    in tmp, PORTB
+    in tmp, LED_PORT
     eor tmp, k
-    out PORTB, tmp
+    out LED_PORT, tmp
     reti

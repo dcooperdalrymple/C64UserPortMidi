@@ -1,60 +1,85 @@
 ; Title: C64 UserPort MIDI
 ; Author: D Cooper Dalrymple
+; Website: https://dcdalrymple.com/C64UserPortMidi/
 ; Created: 24/02/2021
-; Updated: 24/03/2021
-; https://dcooperdalrymple.com/
+; Updated: 13/12/2022
+; HW Version: v1.0 RevA
+; SW Version: v1.1
 
 .nolist
-.include "tn13Adef.inc"
+.include "tn2313def.inc"
 .list
+
+.equ LED = PD3
 
 .def tmp = r16
 .def i = r17
 .def j = r18
 .def k = r19
+.def data = r20
 
 .dseg
 .org SRAM_START
 midi_buffer: .byte 64
 
 .org $0000 ; Hard Reset
-    rjmp init
+    rjmp Init
 
 .org INT0addr
-    rjmp MidiReceive
+    rjmp BusReceive
 
 .org $000A ; Start of program code
 
 .include "delay.inc"
-.include "shift.inc"
+.include "bus.inc"
 .include "midi.inc"
 
-init:
-    rcall ShiftInit
+Init:
+    ; Set Stack Pointer to top of RAM
+    ldi tmp, low(RAMEND)
+    out SPL, tmp
+
+    ; Configure led output
+    sbi DDRD, LED
+    sbi PORTD, LED ; Start high to indicate initialization
+
+    ; Initialize components
+    rcall BusInit
     rcall MidiInit
 
-buffer:
-    nop
+    cbi PORTD, LED ; Initialization process complete
+
+    ; Enable Interrupts
+    sei
+
+Buffer:
+    ; Populate buffer with incoming midi bytes
+    rcall MidiReceive
 
     ldi tmp, LOW(SRAM_START)
     cpse YL, tmp ; NOTE: Relative branches aren't working for some reason
-    rjmp buffer_process
-    rjmp buffer
+    rjmp Buffer_process ; Data in buffer
+    rjmp Buffer ; Keep waiting for buffer
 
-buffer_process:
+    ; TODO: Wait until enough valid midi data to process and check channel, etc.
+
+Buffer_process:
+    sbi PORTD, LED
+
     ldi XH, HIGH(SRAM_START)
     ldi XL, LOW(SRAM_START)
-buffer_write:
+Buffer_write:
 
-    ; Load current data byte and shift into register
+    ; Load current data byte and transmit to bus
     ld data, X
-    rcall ShiftByte
+    rcall BusTransmit
 
     ; Load up next byte if we still haven't hit index
     inc XL
     cpse XL, YL
-    rjmp buffer_write
+    rjmp Buffer_write
 
-buffer_clear:
+Buffer_clear:
+    cbi PORTD, LED
     rcall MidiClear
-    rjmp buffer
+    rjmp Buffer

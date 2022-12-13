@@ -1,15 +1,20 @@
 ; Title: C64 UserPort MIDI - C64 Shift & Flag Speed Test
 ; Author: D Cooper Dalrymple
+; Website: https://dcdalrymple.com/C64UserPortMidi/
 ; Created: 22/03/2021
-; Updated: 25/03/2021
-; https://dcooperdalrymple.com/
+; Updated: 13/12/2022
+; HW Version: v1.0 RevA
 
 .nolist
-.include "tn13Adef.inc"
+.include "tn2313def.inc"
 .list
 
 .equ LOAD_DELAY = 5000 ; milliseconds
 .equ ROW_DELAY = 2000 ; milliseconds
+
+.equ LED = PD3
+.equ LED_DDR = DDRD
+.equ LED_PORT = PORTD
 
 .def tmp = r16
 .def i = r17
@@ -22,10 +27,15 @@
 .org $000A
 
 .include "delay.inc"
-.include "shift.inc"
+.include "bus.inc"
+.include "midi.inc" ; Just needed for BusReceive
 
 init:
-    rcall ShiftInit
+    rcall BusInit
+
+    ; Set Led as output
+    sbi LED_DDR, LED
+    cbi LED_PORT, LED
 
     ldi MH, HIGH(LOAD_DELAY)
     ldi ML, LOW(LOAD_DELAY)
@@ -34,18 +44,18 @@ init:
 loop:
     ; Indicator
     ldi data, $0F
-    rcall ShiftByte
+    rcall BusTransmit
 
     ldi data, $70
-    rcall ShiftByte
+    rcall BusTransmit
 
     ; Flip-flop bits for rest of row
     ldi k, 4
 loop_data:
     ldi data, $AA
-    rcall ShiftByte
+    rcall BusTransmit
     ldi data, $55
-    rcall ShiftByte
+    rcall BusTransmit
     dec k
     brne loop_data
 

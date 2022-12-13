@@ -1,72 +1,87 @@
-.equ MIDI_RX = PB1
-.equ MIDI_DELAY_BIT = 101 ; 307 cycles (3 counter + 3*101 delay + 2 read)
+; Reference: https://mitxela.com/projects/midi_on_the_attiny
 
-.def delay = r21
-.def counter = r22
+; Indirect address reference, Y, is reserved for MIDI input buffer size
 
 MidiInit:
     cli
 
     rcall MidiClear
 
-    ; Set as input
-    cbi DDRB, MIDI_RX
+    ; Set USART Baudrate Clock Divider
+    ; MIDI requires 31.25kBit/s within 1% error
+    ; Baudrate=CLK/16/(UBRR+1)
+    ; UBBR=CLK/16/Baudrate-1
+    ; Error=((Baudrate/Desired)-1)*100%
+    ldi tmp, 0
+    out UBRRH, tmp
+    ldi tmp, 1 ; 1MHz=1, 8MHz=15
+    out UBRRL, tmp
 
-    ; Enable internal pull-up resistor
-    sbi PORTB, MIDI_RX
+    ; Enable USART receiver and transmission
+    ldi tmp, (1<<RXEN)|(1<<TXEN)
+    out UCSRB, tmp
 
-    ; Configure external interrupt as falling edge
-    in tmp, MCUCR
-    cbr tmp, (1<<ISC00)
-    sbr tmp, (1<<ISC01)
-    out MCUCR, tmp
+    ; Set frame format: 8 data bits, no parity, 1 stop bit
+    ldi tmp, (1<<UCSZ1)|(1<<UCSZ0)
+    out UCSRC, tmp
 
-    ; Enable external interrupt
-    in tmp, GIMSK
-    sbr tmp, (1<<INT0)
-    cbr tmp, (1<<PCIE)
-    out GIMSK, tmp
+    rcall MidiFlush
 
     sei
     ret
 
-MidiReceive:                        ; 3 for init
-    cli                             ; 1
-    ldi counter, 0x80               ; 1
-    ldi delay, (MIDI_DELAY_BIT)     ; 1
+MidiWait: ; Block until we have byte in midi buffer
+    sbis UCSRA, RXC
+    rjmp MidiWait
+    ret
 
-MidiReceive_bit:                    ; 3 for every iteration
-    dec delay                       ; 1
-    brne MidiReceive_bit            ; 2 (1 if false)
-    ldi delay, (MIDI_DELAY_BIT)     ; 1
+MidiReceive:
+    sbis UCSRA, RXC
+    ret
 
-MidiReceive_read:                   ; 2 for read
-    sbic PORTB, MIDI_RX             ; Skip next instruction if pin is low
-    sec                             ; 2 (skip + sec)
+MidiReceive_byte:
+    cli
 
-    ror counter                     ; 1
-    brcc MidiReceive_bit            ; 2 (1 if false)
-MidiReceive_stop: ; Wait until high for stop bit
-    sbis PORTB, MIDI_RX ; Skip next instruction if pin is high
-    rjmp MidiReceive_stop
+    in tmp, UDR
 
     ; Store in buffer
-    st Y, counter
+    st Y, tmp
     inc YL
 
+    ; Receive more bytes if there are any
+    sbic UCSRA, RXC
+    rjmp MidiReceive_byte
+
     sei
-    reti
+    ret
+
+MidiTransmit: ; Value to send is stored in data
+    cli
+
+MidiTransmit_empty:
+    ; Wait for empty transmit buffer
+    sbis UCSRA, UDRE
+    rjmp MidiTransmit_empty
+
+    ; Put data into buffer and send
+    out UDR, data
+
+    sei
+    ret
 
 MidiClear:
     ; Reset buffer index to beginning of SRAM
     ldi YH, HIGH(SRAM_START)
     ldi YL, LOW(SRAM_START)
+
+    ; Clear first index
+    ldi tmp, 0
+    st Y, tmp
+
     ret
 
-MidiRead:
-    ; Wait until a byte is in the buffer, uses XH/XL as relative address
-    inc XL
-MidiRead_wait:
-    cp XL, YL
-    brsh MidiRead_wait
+MidiFlush:
+    sbis UCSRA, RXC
     ret
+    in tmp, UDR
+    rjmp MidiFlush

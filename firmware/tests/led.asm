@@ -1,14 +1,17 @@
 ; Title: C64 UserPort MIDI - Led Blink Test
 ; Author: D Cooper Dalrymple
+; Website: https://dcdalrymple.com/C64UserPortMidi/
 ; Created: 02/03/2021
-; Updated: 25/03/2021
-; https://dcooperdalrymple.com/
+; Updated: 13/12/2022
+; HW Version: v1.0 RevA
 
 .nolist
-.include "tn13Adef.inc"
+.include "tn2313def.inc"
 .list
 
-.equ LED = PB0
+.equ LED = PD3
+.equ LED_DDR = DDRD
+.equ LED_PORT = PORTD
 
 .def tmp = r16
 .def i = r17
@@ -24,14 +27,14 @@
 
 init:
     ; Set Led as output and start high
-    sbi DDRB, LED
-    sbi PORTB, LED
+    sbi LED_DDR, LED
+    sbi LED_PORT, LED
 
 loop:
     ldi i, (1<<LED)
-    in tmp, PORTB
+    in tmp, LED_PORT
     eor tmp, i
-    out PORTB, tmp
+    out LED_PORT, tmp
 
     ldi MH, HIGH(1000)
     ldi ML, LOW(1000)
