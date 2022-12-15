@@ -1,3 +1,5 @@
+; Configured for 1MHz
+
 .def UH = r25
 .def UL = r24
 .def MH = r31 ; Same as ZH
@@ -5,14 +7,9 @@
 
 ; Use UH/UL pair for number of microseconds, not very accurate especially with lower values
 DelayMicroseconds:
-    nop
-    nop
-    nop
-    nop
-    nop
-    sbiw UL, 1
-    brne DelayMicroseconds
-    ret
+    sbiw UH:UL, 4 ; 2
+    brpl DelayMicroseconds ; 1(false)/2(true)
+    ret ; 4
 
 ; Use MH/ML pair for number of milliseconds, also uses UH/UL for microseconds
 DelayMilliseconds:
@@ -20,6 +17,6 @@ DelayMilliseconds:
     ldi UL, LOW(1000)
     rcall DelayMicroseconds
 
-    sbiw ML, 1
+    sbiw MH:ML, 1
     brne DelayMilliseconds
     ret
