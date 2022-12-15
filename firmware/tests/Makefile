@@ -14,9 +14,7 @@ TRANSFER_TARGET=transfer
 INTERRUPT_TARGET=interrupt
 TARGETS=${LED_TARGET}.hex ${MIDI_TARGET}.hex ${TRANSFER_TARGET}.hex ${INTERRUPT_TARGET}.hex
 
-ISP_DEVICE=arduino
-ISP_PORT=/dev/ttyACM0
-ISP_BAUDRATE=19200
+ISP_DEVICE=usbtiny
 
 AS=avra
 AVRDUDE=avrdude
@@ -35,11 +33,11 @@ flash:
 
 	@(ls $(p).hex >> /dev/null 2>&1) || (echo "$(p) does not exist to flash to device. Please compile using make or check if the desired test exists." && exit 1)
 
-	@echo "Flashing $(p).hex to ATtiny13A device.";
-	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:$(p).hex:i
+	@echo "Flashing $(p).hex to ATtiny2313 device.";
+	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -Uflash:w:$(p).hex:i
 
 fuse:
-	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
+	${AVRDUDE} -C../avrdude.conf -v -p${MCU} -c${ISP_DEVICE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
 
 clean:
 	rm -f *.asm~ *.hex *.obj *.cof *.elf *.o

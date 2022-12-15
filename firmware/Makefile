@@ -9,9 +9,7 @@ F_CPU=1000000 # 1 MHz
 UART_BAUDRATE=31250
 TARGET=firmware
 
-ISP_DEVICE=arduino
-ISP_PORT=/dev/ttyACM0
-ISP_BAUDRATE=19200
+ISP_DEVICE=usbtiny
 
 AS=avra
 AVRDUDE=avrdude
@@ -29,10 +27,10 @@ compile:
 	mv ${SRC}.obj ${TARGET}.obj
 
 flash:
-	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uflash:w:${TARGET}.hex:i
+	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -Uflash:w:${TARGET}.hex:i
 
 fuse:
-	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -P${ISP_PORT} -b${ISP_BAUDRATE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
+	${AVRDUDE} -Cavrdude.conf -v -p${MCU} -c${ISP_DEVICE} -Uhfuse:w:${FUSE_H}:m -Ulfuse:w:${FUSE_L}:m
 
 clean:
 	rm -f *.asm~ *.hex *.obj *.cof *.elf *.o *.map *.lst
