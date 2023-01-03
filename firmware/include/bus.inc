@@ -4,7 +4,7 @@
 .equ RECV = PD2
 .equ FLAG = PD5
 
-.equ FLAG_DELAY = 50
+.equ FLAG_DELAY = 50 ; microseconds
 
 .def data = r20
 
@@ -90,8 +90,8 @@ BusTransmit_complete:
 
     ; Set bus back as floating input and enable interrupt
     rcall BusInput
-
     sei
+
     ret
 
 ; Will trigger if

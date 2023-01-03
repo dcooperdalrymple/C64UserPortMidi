@@ -42,6 +42,8 @@ init:
     rcall DelayMilliseconds
 
 loop:
+    sbi LED_PORT, LED
+
     ; Indicator
     ldi data, $0F
     rcall BusTransmit
@@ -58,6 +60,8 @@ loop_data:
     rcall BusTransmit
     dec k
     brne loop_data
+
+    cbi LED_PORT, LED
 
     ldi MH, HIGH(ROW_DELAY)
     ldi ML, LOW(ROW_DELAY)
