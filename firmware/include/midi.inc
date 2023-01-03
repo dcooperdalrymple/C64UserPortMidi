@@ -1,11 +1,7 @@
 ; Reference: https://mitxela.com/projects/midi_on_the_attiny
 
-; Indirect address reference, Y, is reserved for MIDI input buffer size
-
 MidiInit:
     cli
-
-    rcall MidiClear
 
     ; Set USART Baudrate Clock Divider
     ; MIDI requires 31.25kBit/s within 1% error
@@ -35,24 +31,18 @@ MidiWait: ; Block until we have byte in midi buffer
     rjmp MidiWait
     ret
 
-MidiReceive:
+MidiReceiveByte:
     sbis UCSRA, RXC
     ret
 
-MidiReceive_byte:
     cli
-
-    in tmp, UDR
-
-    ; Store in buffer
-    st Y, tmp
-    inc YL
-
-    ; Receive more bytes if there are any
-    sbic UCSRA, RXC
-    rjmp MidiReceive_byte
-
+    in data, UDR
     sei
+    ret
+
+MidiReceive:
+    rcall MidiWait
+    rcall MidiReceiveByte
     ret
 
 MidiTransmit: ; Value to send is stored in data
@@ -67,17 +57,6 @@ MidiTransmit_empty:
     out UDR, data
 
     sei
-    ret
-
-MidiClear:
-    ; Reset buffer index to beginning of SRAM
-    ldi YH, HIGH(SRAM_START)
-    ldi YL, LOW(SRAM_START)
-
-    ; Clear first index
-    ldi tmp, 0
-    st Y, tmp
-
     ret
 
 MidiFlush:

@@ -20,7 +20,6 @@
 
 .dseg
 .org SRAM_START
-midi_buffer: .byte 64
 
 .org $0000 ; Hard Reset
     rjmp Init
