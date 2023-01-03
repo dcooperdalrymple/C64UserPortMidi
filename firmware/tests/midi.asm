@@ -2,8 +2,10 @@
 ; Author: D Cooper Dalrymple
 ; Website: https://dcdalrymple.com/C64UserPortMidi/
 ; Created: 02/03/2021
-; Updated: 13/12/2022
+; Updated: 03/01/2023
 ; HW Version: v1.0 RevA
+
+; MIDI reference: https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
 
 .nolist
 .include "tn2313def.inc"
@@ -18,6 +20,10 @@
 .def j = r18
 .def k = r19
 .def data = r20
+.def command = r21
+.def channel = r22
+.def note = r23
+.def velocity = r24
 
 .org $0000 ; Hard Reset
     rjmp init
@@ -27,85 +33,73 @@
 .include "midi.inc"
 
 init:
-    ; Set Led as output and start low
-    sbi LED_DDR, LED
-    cbi LED_PORT, LED
+    ; Set Stack Pointer to top of RAM
+    ldi tmp, low(RAMEND)
+    out SPL, tmp
 
+    ; Configure led output
+    sbi DDRD, LED
+    sbi LED_PORT, LED ; Start high to indicate initialization
+
+    ; Initialize components
     rcall MidiInit
 
-loop:
-    cpi YL, LOW(SRAM_START)
-    breq wait
+    cbi LED_PORT, LED ; Initialization process complete
 
-    ldi XH, HIGH(SRAM_START)
-    ldi XL, LOW(SRAM_START)
+Process:
+    ; Get first byte of midi message
+    rcall MidiReceive ; blocking
 
-loop_read:
-    ;ld tmp, X
+    ; Make sure that the 7th-bit is set to indicate status byte
+    sbrs data, 7
+    rjmp Process
 
-    ;sbrs tmp, 7
-    ;rjmp loop_next
+    ; Extract command and channel
+    mov command, data
+    andi command, 0xF0
+    mov channel, data
+    andi channel, 0x0F
 
-    ; Toggle LED
-    ldi k, (1<<LED)
-    in tmp, LED_PORT
-    eor tmp, k
-    out LED_PORT, tmp
+    ; Check the type of command
+    cpi command, 0x90
+    breq Midi_NoteOn
 
-loop_next:
-    inc XL
-    cpse XL, YL
-    rjmp loop_read
+    cpi command, 0x80
+    breq Midi_NoteOff
 
-    rcall MidiClear
-    rjmp loop
+    ; Start over if we don't recognize the command
+    rjmp Process
 
-wait:
-    cpi YL, LOW(SRAM_START)
-    breq wait
+Midi_NoteOn:
+    ; Get note
+    rcall MidiReceive
+    mov note, data
 
-    ldi XH, HIGH(SRAM_START)
-    ldi XL, LOW(SRAM_START)
+    ; Get velocity
+    rcall MidiReceive
+    mov velocity, data
 
-read:
+    cpi velocity, 0
+    breq Midi_NoteOff_process
 
-    ; Just check the command byte
-    ld tmp, X
-    andi tmp, 0xF0
-
-    cpi tmp, 0x90
-    breq note_on
-
-    cpi tmp, 0x80
-    breq note_off
-
-    rjmp next
-
-note_on:
-    ; Read 2 more bytes
-    rcall MidiReceive ; Note
-    rcall MidiReceive ; Velocity
-
-    ; Check if velocity is zero (aka note off)
-    ld tmp, X
-    cpi tmp, 0
-    breq note_off_b
-
+Midi_NoteOn_process:
     sbi LED_PORT, LED
-    rjmp next
 
-note_off:
-    ; Read 2 more bytes
-    rcall MidiReceive ; Note
-    rcall MidiReceive ; Velocity
+    rjmp Midi_Complete
 
-note_off_b:
+Midi_NoteOff:
+    ; Get note
+    rcall MidiReceive
+    mov note, data
+
+    ; Get velocity
+    rcall MidiReceive
+    mov velocity, data
+
+Midi_NoteOff_process:
     cbi LED_PORT, LED
 
-next:
-    inc XL
-    cpse XL, YL
-    rjmp read
+    ;rjmp Midi_Complete
 
-    rcall MidiClear
-    rjmp wait
+Midi_Complete:
+    rjmp Process
